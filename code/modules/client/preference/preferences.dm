@@ -2947,7 +2947,7 @@ GLOBAL_LIST_INIT(special_role_times, list( //minimum age (in days) for accounts 
 		character.force_gene_block(GLOB.swedeblock, TRUE, TRUE)
 
 	if((disabilities & DISABILITY_FLAG_AULD_IMPERIAL) && !(new_species.blacklisted_disabilities & DISABILITY_FLAG_AULD_IMPERIAL))
-		character.force_gene_block(GLOB.auld_imeperial_block, TRUE, TRUE)
+		character.force_gene_block(GLOB.auld_imperial_block, TRUE, TRUE)
 
 	if((disabilities & DISABILITY_FLAG_LISP) && !(new_species.blacklisted_disabilities & DISABILITY_FLAG_LISP))
 		character.force_gene_block(GLOB.lispblock, TRUE, TRUE)
