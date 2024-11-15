@@ -405,7 +405,6 @@
 	. = ..()
 	if(H.remove_language("Galactic Common"))
 		H.add_language("Galactic Common", TRUE)
-	H.set_default_language(GLOB.all_languages[H.dna.species.language])
 	H.dna.species.default_language = H.dna.species.language
 
 
