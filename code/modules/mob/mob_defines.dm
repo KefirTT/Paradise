@@ -91,7 +91,8 @@
 	var/exploit_record = ""
 	/// For speaking/listening.
 	var/list/datum/language/languages
-	var/list/datum/language/languages_only_listen // For understanding the language without ability to speak. Still can speak if lang is in /languages list
+	/// For understanding the language without ability to speak. Still can speak if lang is in /languages list
+	var/list/datum/language/languages_only_listen
 	/// For reagents that grant language knowlege.
 	var/list/temporary_languages
 	var/list/speak_emote = list("says")   // Verbs used when speaking. Defaults to 'say' if speak_emote is null.

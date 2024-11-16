@@ -408,7 +408,8 @@
 	. = ..()
 	if(H.remove_language(LANGUAGE_GALACTIC_COMMON))
 		H.add_language(LANGUAGE_GALACTIC_COMMON, TRUE)
-		H.dna.species.default_language = H.dna.species.language
+		if(H.dna.species.default_language == LANGUAGE_GALACTIC_COMMON)
+			H.dna.species.default_language = H.dna.species.language
 
 
 /datum/dna/gene/disability/aphasia/deactivate(mob/living/carbon/human/H, flags)
