@@ -398,18 +398,21 @@
 	..()
 	block = GLOB.aphasiablock
 
-/datum/dna/gene/disability/aphasia/activate(mob/living/carbon/human/H, flags)
+/datum/dna/gene/disability/aphasia/can_activate(mob/living/carbon/human/H, flags)
 	if(isplasmaman(H) || iswryn(H))
 		to_chat(H, span_warning("Вы чувствуете, что что-то не так, но не можете понять, что именно."))
-		return
+		return FALSE
 	. = ..()
-	if(H.remove_language("Galactic Common"))
-		H.add_language("Galactic Common", TRUE)
-	H.dna.species.default_language = H.dna.species.language
+
+/datum/dna/gene/disability/aphasia/activate(mob/living/carbon/human/H, flags)
+	. = ..()
+	if(H.remove_language(LANGUAGE_GALACTIC_COMMON))
+		H.add_language(LANGUAGE_GALACTIC_COMMON, TRUE)
+		H.dna.species.default_language = H.dna.species.language
 
 
-/datum/dna/gene/disability/aphasia/deactivate(mob/living/H, flags)
+/datum/dna/gene/disability/aphasia/deactivate(mob/living/carbon/human/H, flags)
 	. = ..()
-	if(H.remove_language("Galactic Common", TRUE))
-		H.add_language("Galactic Common")
-		H.dna.species.default_language = LANGUAGE_GALACTIC_COMMON
+	if(H.remove_language(LANGUAGE_GALACTIC_COMMON, TRUE))
+		H.add_language(LANGUAGE_GALACTIC_COMMON)
+		H.dna.species.default_language = initial(H.dna.species.default_language)

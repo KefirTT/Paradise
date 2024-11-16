@@ -13,7 +13,7 @@
 	if(dna?.species?.can_understand(other))
 		return TRUE
 
-	if(speaking in languages_listening)
+	if(speaking in languages_only_listen)
 		return TRUE
 
 	//These only pertain to common. Languages are handled by mob/say_understands()

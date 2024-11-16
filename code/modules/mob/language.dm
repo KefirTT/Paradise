@@ -921,9 +921,9 @@
 			return FALSE
 
 	if(only_listening)
-		. = !LAZYIN(languages_listening, new_language)
+		. = !LAZYIN(languages_only_listen, new_language)
 		if(.)
-			LAZYADD(languages_listening, new_language)
+			LAZYADD(languages_only_listen, new_language)
 	else
 		. = !LAZYIN(languages, new_language)
 		if(.)
@@ -940,9 +940,9 @@
 		if(!istype(rem_language))
 			return FALSE
 	if(only_listening)
-		. = LAZYIN(languages_listening, rem_language)
+		. = LAZYIN(languages_only_listen, rem_language)
 		if(.)
-			LAZYREMOVE(languages_listening, rem_language)
+			LAZYREMOVE(languages_only_listen, rem_language)
 	else
 		. = LAZYIN(languages, rem_language)
 		if(.)
