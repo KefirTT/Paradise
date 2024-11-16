@@ -389,10 +389,12 @@
 
 /datum/dna/gene/disability/aphasia
 	name = "Aphasia"
-	desc = "Цель забывает язык повседневного общения."
+	desc = "Цель теряет возможность говорить на своем основном языке."
 	activation_message = list("Вам становится труднее выражать свои мысли. Meh nahbleh blahmeh?")
 	deactivation_message = list("Ваша речь возвращается в норму.")
 	instability = -GENE_INSTABILITY_MINOR
+	/// Default language can be changed, so don't use initial(), use this.
+	var/cached_default_language
 
 /datum/dna/gene/disability/aphasia/New()
 	. = ..()
@@ -407,13 +409,14 @@
 
 /datum/dna/gene/disability/aphasia/activate(mob/living/carbon/human/H, flags)
 	. = ..()
-	if(H.remove_language(H.dna.species.default_language))
-		H.add_language(H.dna.species.default_language, TRUE)
+	cached_default_language = H.dna.species.default_language
+	if(H.remove_language(cached_default_language))
+		H.add_language(cached_default_language, TRUE)
 		H.dna.species.default_language = H.dna.species.language
 
 
 /datum/dna/gene/disability/aphasia/deactivate(mob/living/carbon/human/H, flags)
 	. = ..()
-	if(H.remove_language(initial(H.dna.species.default_language), TRUE))
-		H.add_language(initial(H.dna.species.default_language))
-		H.dna.species.default_language = initial(H.dna.species.default_language)
+	if(H.remove_language(cached_default_language, TRUE))
+		H.add_language(cached_default_language)
+		H.dna.species.default_language = cached_default_language
