@@ -389,7 +389,7 @@
 
 /datum/dna/gene/disability/aphasia
 	name = "Aphasia"
-	desc = "Цель теряет возможность говорить на своем основном языке."
+	desc = "Субъект теряет возможность говорить на своём основном языке."
 	activation_message = list("Вам становится труднее выражать свои мысли. Meh nahbleh blahmeh?")
 	deactivation_message = list("Ваша речь возвращается в норму.")
 	instability = -GENE_INSTABILITY_MINOR
