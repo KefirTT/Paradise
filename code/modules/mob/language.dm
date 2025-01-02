@@ -920,9 +920,9 @@
 		if(!istype(new_language))
 			return FALSE
 
-		. = !LAZYIN(languages, new_language)
-		if(.)
-			LAZYADD(languages, new_language)
+	. = !LAZYIN(languages, new_language)
+	if(.)
+		LAZYADD(languages, new_language)
 
 
 /mob/proc/remove_language(language_name)
@@ -935,9 +935,9 @@
 		if(!istype(rem_language))
 			return FALSE
 
-		. = LAZYIN(languages, rem_language)
-		if(.)
-			LAZYREMOVE(languages, rem_language)
+	. = LAZYIN(languages, rem_language)
+	if(.)
+		LAZYREMOVE(languages, rem_language)
 
 
 /mob/living/remove_language(language_name)

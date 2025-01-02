@@ -428,7 +428,7 @@
 )
 	SIGNAL_HANDLER
 
-	if(!lang_piece.speaking)
+	if(!lang_piece?.speaking)
 		return
 
 	if(!is_type_in_list(lang_piece.speaking, blacklisted_languages_types))
