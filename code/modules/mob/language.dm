@@ -907,9 +907,9 @@
 
 
 // Language handling.
-/mob/proc/add_language(language_name, var/only_listening = FALSE)
+/mob/proc/add_language(language_name)
 	if(SEND_SIGNAL(src, COMSIG_MOB_LANGUAGE_ADD, language_name) & DISEASE_MOB_LANGUAGE_PROCESSED)
-		return FALSE
+		return TRUE
 
 	var/datum/language/new_language = GLOB.all_languages[language_name]
 	if(new_language in languages)
@@ -920,30 +920,21 @@
 		if(!istype(new_language))
 			return FALSE
 
-	if(only_listening)
-		. = !LAZYIN(languages_only_listen, new_language)
-		if(.)
-			LAZYADD(languages_only_listen, new_language)
-	else
 		. = !LAZYIN(languages, new_language)
 		if(.)
 			LAZYADD(languages, new_language)
 
 
-/mob/proc/remove_language(language_name, var/only_listening = FALSE)
+/mob/proc/remove_language(language_name)
 	if(SEND_SIGNAL(src, COMSIG_MOB_LANGUAGE_REMOVE, language_name) & DISEASE_MOB_LANGUAGE_PROCESSED)
-		return FALSE
+		return TRUE
 
 	var/datum/language/rem_language = GLOB.all_languages[language_name]
 	if(!istype(rem_language))
 		rem_language = GLOB.all_languages[convert_lang_key_to_name(language_name)]
 		if(!istype(rem_language))
 			return FALSE
-	if(only_listening)
-		. = LAZYIN(languages_only_listen, rem_language)
-		if(.)
-			LAZYREMOVE(languages_only_listen, rem_language)
-	else
+
 		. = LAZYIN(languages, rem_language)
 		if(.)
 			LAZYREMOVE(languages, rem_language)

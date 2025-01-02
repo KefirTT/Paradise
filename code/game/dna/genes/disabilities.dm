@@ -393,8 +393,10 @@
 	activation_message = list("Вам становится труднее выражать свои мысли. Meh nahbleh blahmeh?")
 	deactivation_message = list("Ваша речь возвращается в норму.")
 	instability = -GENE_INSTABILITY_MINOR
-	/// Default language can be changed, so don't use initial(), use this.
-	var/cached_default_language
+	/// You will be able to hear these languages, but not to speak.
+	var/list/blacklisted_languages_types = list(
+		/datum/language/common
+	)
 
 /datum/dna/gene/disability/aphasia/New()
 	. = ..()
@@ -407,16 +409,31 @@
 
 	return ..()
 
-/datum/dna/gene/disability/aphasia/activate(mob/living/carbon/human/H, flags)
+/datum/dna/gene/disability/aphasia/activate(mob/living/carbon/human/human, flags)
 	. = ..()
-	cached_default_language = H.dna.species.default_language
-	if(H.remove_language(cached_default_language))
-		H.add_language(cached_default_language, TRUE)
-		H.dna.species.default_language = H.dna.species.language
+	RegisterSignal(human, COMSIG_LIVING_EARLY_SAY, PROC_REF(check_speaking))
 
-
-/datum/dna/gene/disability/aphasia/deactivate(mob/living/carbon/human/H, flags)
+/datum/dna/gene/disability/aphasia/deactivate(mob/living/carbon/human/human, flags)
 	. = ..()
-	if(H.remove_language(cached_default_language, TRUE))
-		H.add_language(cached_default_language)
-		H.dna.species.default_language = cached_default_language
+	UnregisterSignal(human, COMSIG_LIVING_EARLY_SAY)
+
+/datum/dna/gene/disability/aphasia/proc/check_speaking(
+	mob/living/carbon/human/source,
+	message,
+	verb,
+	ignore_speech_problems,
+    ignore_atmospherics,
+    ignore_languages,
+    datum/multilingual_say_piece/lang_piece,
+)
+	SIGNAL_HANDLER
+
+	if(!lang_piece.speaking)
+		return
+
+	if(!is_type_in_list(lang_piece.speaking, blacklisted_languages_types))
+		return
+
+	to_chat(source, span_notice("Вы пытаетесь что-то сказать, но не можете произнести ни слова на этом языке."))
+
+	return COMPONENT_PREVENT_SPEAKING
