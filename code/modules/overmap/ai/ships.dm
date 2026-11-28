@@ -128,10 +128,6 @@
 /obj/overmap/entity/virtual_structure/ai/proc/repair_ai_ship()
 	var/resume = ship_ai.enabled || ai_destroyed
 	ship_ai.set_enabled(FALSE)
-	ship_ai.weapons.Cut()
-	ship_ai.weapon_targets.Cut()
-	ship_ai.weapon_snapshots.Cut()
-	ship_ai.weapon_snapshot_tick = -1
 	QDEL_LIST(virtual_weapons)
 	for(var/key, record in virtual_cells)
 		var/list/cell = record
@@ -145,8 +141,7 @@
 	ai_destroyed = FALSE
 	ai_destroyed_cells = 0
 	prepare_ai(ship_ai.profile)
-	for(var/obj/machinery/gun as anything in virtual_weapons)
-		ship_ai.weapons += gun
+	ship_ai.refresh_weapons()
 	flight.engines_state = TRUE
 	flight.refresh_thrust()
 	map_color = SSovermap.faction_color(ship_ai.faction) || COLOR_WHITE

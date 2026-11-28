@@ -294,13 +294,16 @@
 		close(can_be_suspended = FALSE)
 		return
 	// Validate ping
-	if(!initialized && world.time - opened_at > TGUI_PING_TIMEOUT)
+	var/radar_loading = radar_source && !window.is_ready()
+	if((!initialized || radar_loading) && world.time - opened_at > TGUI_PING_TIMEOUT)
 		log_tgui(user, \
 			"Error: Zombie window detected, killing it with fire.\n" \
 			+ "window_id: [window.id]\n" \
 			+ "opened_at: [opened_at]\n" \
 			+ "world.time: [world.time]")
 		close(can_be_suspended = FALSE)
+		return
+	if(radar_loading)
 		return
 	// Update through a normal call to ui_interact
 	if(status != UI_DISABLED && (autoupdate || force))

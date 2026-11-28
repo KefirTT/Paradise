@@ -125,8 +125,49 @@ SUBSYSTEM_DEF(overmap)
 	refresh_ruin_space_lighting()
 	RegisterSignal(SSdcs, COMSIG_GLOB_EXPLOSION, PROC_REF(mirror_explosion))
 	print_roundstart_comms_keys()
+	addtimer(CALLBACK(src, PROC_REF(log_memory_sample)), 1 MINUTES, TIMER_LOOP|TIMER_DELETE_ME)
 	last_fire_time = world.time
 	return SS_INIT_SUCCESS
+
+/datum/controller/subsystem/overmap/proc/log_memory_sample()
+	if(!CONFIG_GET(flag/log_game))
+		return
+	var/fog_views = 0
+	var/fog_images = 0
+	for(var/client/viewer, views in GLOB.fog_attached_views)
+		var/list/frames = views
+		fog_views += length(frames)
+		for(var/frame, entry in frames)
+			var/datum/fog_view/view = entry
+			fog_images += length(view?.tiles)
+	var/radar_windows = 0
+	var/queued_messages = 0
+	var/scatter_chunks = 0
+	for(var/obj/overmap/feature/hazard/hazard as anything in hazards)
+		scatter_chunks += length(hazard.scatter_radar_chunks)
+	for(var/obj/overmap/entity/vessel as anything in radar_vessels)
+		radar_windows += length(vessel.radar_uis)
+		for(var/datum/tgui/ui as anything in vessel.radar_uis)
+			queued_messages += length(ui.window?.message_queue)
+	var/list/sample = list(
+		"rss_mib" = SSserver_maint.memory,
+		"virtual_mib" = SSserver_maint.virtual_memory,
+		"clients" = length(GLOB.clients),
+		"z_levels" = world.maxz,
+		"reservations" = length(SSmapping.turf_reservations),
+		"vessels" = length(vessels),
+		"projectiles" = length(sector_projectiles),
+		"bubbles" = length(bubbles),
+		"scatter_chunks" = scatter_chunks,
+		"registered_uids" = RUSTLIB_CALL(get_uuid_counter_value),
+		"fog_views" = fog_views,
+		"fog_images" = fog_images,
+		"radar_windows" = radar_windows,
+		"radar_queued_messages" = queued_messages,
+		"gc_check_queue" = length(SSgarbage.queues[GC_QUEUE_CHECK]),
+		"hard_deletes" = SSgarbage.totaldels,
+	)
+	log_game("Overmap memory [json_encode(sample)]")
 
 /datum/controller/subsystem/overmap/proc/refresh_ruin_space_lighting()
 	if(!SSlighting?.initialized)

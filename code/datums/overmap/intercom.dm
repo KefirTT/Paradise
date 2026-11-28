@@ -6,6 +6,7 @@
 	var/sender_name = "Неизвестный"
 	var/sector_id
 	var/sent_at = 0
+	var/list/unlocked_by
 
 /datum/overmap_sector_message/New(body, key, origin_name, from_sector_id)
 	id = "omsg_[UID()]"

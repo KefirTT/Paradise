@@ -128,6 +128,8 @@
  * Reinitializes the panel with previous data used for initialization.
  */
 /datum/tgui_window/proc/reinitialize()
+	if(locked_by?.radar_source)
+		locked_by.opened_at = world.time
 	initialize(
 		strict_mode = initial_strict_mode,
 		assets = initial_assets,

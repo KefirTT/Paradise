@@ -10,8 +10,6 @@
 	var/obj/overmap/entity/vessel
 	var/next_transmit = 0
 
-	var/list/unlocked_message_ids
-
 	var/list/datum/overmap_comms_cipher/known_ciphers
 	var/beep_muted = FALSE
 	var/overmap_key_printed = FALSE
@@ -30,7 +28,6 @@
 
 /obj/machinery/overmap_intercom/Initialize(mapload)
 	. = ..()
-	unlocked_message_ids = list()
 	known_ciphers = list()
 	GLOB.overmap_intercoms += src
 	snap_to_wall()
@@ -72,7 +69,6 @@
 /obj/machinery/overmap_intercom/Destroy()
 	GLOB.overmap_intercoms -= src
 	vessel = null
-	unlocked_message_ids = null
 	QDEL_LIST(known_ciphers)
 	return ..()
 
@@ -102,7 +98,7 @@
 		var/datum/overmap_comms_cipher/cipher = find_cipher(message.encryption_key)
 		if(cipher)
 			if(cipher.autodecrypt)
-				unlocked_message_ids[message.id] = TRUE
+				LAZYSET(message.unlocked_by, UID(), TRUE)
 			if(cipher.announce)
 				atom_say("Получено новое сообщение с зашифрованного канала.")
 	else
@@ -121,7 +117,7 @@
 /obj/machinery/overmap_intercom/proc/message_unlocked(datum/overmap_sector_message/message)
 	if(!message?.encryption_key)
 		return TRUE
-	return unlocked_message_ids[message.id]
+	return LAZYACCESS(message.unlocked_by, UID())
 
 /obj/machinery/overmap_intercom/proc/channel_label_for_message(datum/overmap_sector_message/message)
 	if(!message?.encryption_key)
@@ -276,7 +272,7 @@
 			saved_send_key = key || ""
 			var/datum/overmap_sector_message/message = new(body, key, vessel.get_overmap_display_name(), sector.id)
 			if(key)
-				unlocked_message_ids[message.id] = TRUE
+				LAZYSET(message.unlocked_by, UID(), TRUE)
 			sector.add_comms_message(message)
 			next_transmit = world.time + OVERMAP_COMMS_COOLDOWN
 			use_power = ACTIVE_POWER_USE
@@ -305,14 +301,14 @@
 			if(!message.encryption_key)
 				to_chat(user, span_notice("Сообщение не зашифровано."))
 				return TRUE
-			if(unlocked_message_ids[message.id])
+			if(message_unlocked(message))
 				to_chat(user, span_notice("Это сообщение уже расшифровано на этой панели."))
 				return TRUE
 			if(key != message.encryption_key)
 				to_chat(user, span_warning("Ключ не подходит."))
 				playsound(src, 'sound/machines/terminal_prompt_deny.ogg', 40, FALSE)
 				return TRUE
-			unlocked_message_ids[message.id] = TRUE
+			LAZYSET(message.unlocked_by, UID(), TRUE)
 			if(!find_cipher(key))
 				known_ciphers += new /datum/overmap_comms_cipher(key, "Канал")
 			to_chat(user, span_notice("Сообщение расшифровано на этой панели."))

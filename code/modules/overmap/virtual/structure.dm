@@ -141,7 +141,6 @@
 				engine.set_firing(FALSE)
 		for(var/obj/machinery/gun as anything in virtual_weapons)
 			if(gun.virtual_weapon_x == cell[1] && gun.virtual_weapon_y == cell[2])
-				virtual_weapons -= gun
 				qdel(gun)
 
 /obj/overmap/entity/virtual_structure/proc/add_virtual_weapon(list/spec, x, y)
@@ -160,6 +159,13 @@
 			gun.vars[key] = attributes[key]
 	SEND_SIGNAL(gun, COMSIG_OVERMAP_WEAPON_ROTATED, 0, gun.dir)
 	virtual_weapons += gun
+	RegisterSignal(gun, COMSIG_QDELETING, PROC_REF(on_virtual_weapon_deleted))
+
+/obj/overmap/entity/virtual_structure/proc/on_virtual_weapon_deleted(obj/machinery/gun)
+	SIGNAL_HANDLER
+	UnregisterSignal(gun, COMSIG_QDELETING)
+	virtual_weapons -= gun
+	gun.virtual_weapon_owner = null
 
 /obj/overmap/entity/virtual_structure/keep_inside_local_space()
 	QDEL_NULL(dock_host)

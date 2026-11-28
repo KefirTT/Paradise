@@ -8,9 +8,7 @@
 	weapon_snapshots.Cut()
 	if(QDELETED(owner) || !owner.sector || !isturf(owner.loc))
 		return
-	weapons = list()
-	for(var/obj/machinery/gun in owner.ai_weapons())
-		weapons += gun
+	refresh_weapons()
 	acquire_target()
 	state = target_visible ? "standoff" : "stopped"
 	report_state()

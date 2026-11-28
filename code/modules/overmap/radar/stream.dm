@@ -51,7 +51,7 @@
 		return
 	var/list/viewers = list()
 	for(var/datum/tgui/ui as anything in radar_uis)
-		if(!QDELETED(ui) && !ui.closing && ui.initialized && ui.user?.client && ui.window && ui.status >= UI_UPDATE)
+		if(!QDELETED(ui) && !ui.closing && ui.initialized && ui.user?.client && ui.window?.is_ready() && ui.status >= UI_UPDATE)
 			viewers += ui
 	if(!length(viewers))
 		return

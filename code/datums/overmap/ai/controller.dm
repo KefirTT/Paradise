@@ -284,8 +284,7 @@
 	home_y = owner.get_world_y()
 	wanted_facing = owner.get_facing()
 	next_think = world.time + slot % 5
-	for(var/obj/machinery/gun in owner.ai_weapons())
-		weapons += gun
+	refresh_weapons()
 	if(!owner.stationary_ai)
 		var/obj/overmap/entity/virtual_structure/ai/craft = owner
 		if(istype(craft))
@@ -328,11 +327,30 @@
 	home_sector = null
 	profile = null
 	order = null
+	for(var/obj/machinery/gun as anything in weapons)
+		UnregisterSignal(gun, COMSIG_QDELETING)
 	weapons = null
 	weapon_snapshots = null
 	weapon_targets = null
 	controller = null
 	return ..()
+
+/datum/overmap_ship_ai/proc/refresh_weapons()
+	var/list/available = owner.ai_weapons()
+	for(var/obj/machinery/gun as anything in weapons)
+		if(!(gun in available))
+			remove_weapon(gun)
+	for(var/obj/machinery/gun in available)
+		if(!(gun in weapons))
+			weapons += gun
+			RegisterSignal(gun, COMSIG_QDELETING, PROC_REF(remove_weapon))
+
+/datum/overmap_ship_ai/proc/remove_weapon(obj/machinery/gun)
+	SIGNAL_HANDLER
+	UnregisterSignal(gun, COMSIG_QDELETING)
+	weapons -= gun
+	weapon_targets -= gun
+	weapon_snapshots -= gun
 
 /datum/overmap_ship_ai/proc/on_manual_control()
 	SIGNAL_HANDLER
